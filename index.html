@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>银发守护 - 子女端</title>
+    <style>
+        body {
+            font-family: "微软雅黑", sans-serif;
+            background: #f5f6fa;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 { color: #333; }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .good { border-left: 5px solid #2ecc71; }
+        .bad { border-left: 5px solid #e74c3c; background: #fff5f5; }
+        .name { font-size: 22px; font-weight: bold; }
+        .status { color: #666; margin-top: 5px; }
+        .time { color: #999; font-size: 14px; }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>👨‍👩‍👧 银发守护 - 子女端</h1>
+
+    <!-- 预警通知 -->
+    <div class="alert" id="alertBox" style="display:none;">
+        <strong>⚠️ 预警！</strong>
+        <p id="alertText"></p>
+    </div>
+
+    <!-- 老人状态卡片 1 -->
+    <div class="card good">
+        <div class="name">👴 张建国 <span style="font-size:14px;color:#999;">爸爸 · 78岁</span></div>
+        <div class="status" style="color:green;">
+            ● 今日已打卡
+        </div>
+        <div class="time">2小时前 · 心情：开心</div>
+        <div style="margin-top:10px;">
+            <span style="background:#e8f5e9;padding:5px 10px;border-radius:5px;">连续7天打卡</span>
+            <span style="background:#e3f2fd;padding:5px 10px;border-radius:5px;">用药完成</span>
+        </div>
+        <button onclick="callDad()">📞 视频通话</button>
+    </div>
+
+    <!-- 老人状态卡片 2 -->
+    <div class="card bad" id="momCard">
+        <div class="name">👵 李秀英 <span style="font-size:14px;color:#999;">妈妈 · 75岁</span></div>
+        <div class="status" style="color:red;">
+            ● 26小时未打卡！
+        </div>
+        <div class="time">上次打卡：昨天 08:30</div>
+        <button onclick="callMom()" style="background:#e74c3c;">📞 立即联系</button>
+        <button onclick="safeNow()" style="background:#2ecc71;margin-left:10px;">✓ 确认安全</button>
+    </div>
+
+    <!-- 通知列表 -->
+    <div class="card">
+        <h3>🔔 最近通知</h3>
+        <div style="border-bottom:1px solid #eee;padding:10px 0;">
+            <span style="color:orange;">⚠️</span> 李秀英 26小时未打卡 <span class="time">10分钟前</span>
+        </div>
+        <div style="border-bottom:1px solid #eee;padding:10px 0;">
+            <span style="color:green;">✓</span> 张建国 已平安打卡 <span class="time">2小时前</span>
+        </div>
+        <div style="padding:10px 0;">
+            <span style="color:blue;">💊</span> 李秀英 确认服用降压药 <span class="time">今天 08:00</span>
+        </div>
+    </div>
+
+    <script>
+        // 显示预警
+        function showAlert(text) {
+            document.getElementById('alertBox').style.display = 'block';
+            document.getElementById('alertText').innerText = text;
+        }
+
+        // 模拟：妈妈没打卡，显示预警
+        setTimeout(function() {
+            showAlert('李秀英已26小时未打卡，建议立即电话联系确认安全！');
+        }, 2000);
+
+        // 打电话
+        function callDad() {
+            alert('正在呼叫爸爸...');
+        }
+        function callMom() {
+            alert('正在呼叫妈妈...');
+        }
+
+        // 确认安全
+        function safeNow() {
+            document.getElementById('momCard').className = 'card good';
+            document.getElementById('momCard').querySelector('.status').innerHTML = 
+                '<span style="color:green;">● 已确认安全</span>';
+            document.getElementById('alertBox').style.display = 'none';
+            alert('已标记为安全！');
+        }
+    </script>
+
+</body>
+</html>
