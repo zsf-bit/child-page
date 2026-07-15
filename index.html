@@ -111,8 +111,7 @@
     </div>
 
     <script>
-        const REPO = 'zsf-bit/silver-care-data';
-        const ELDER_ID = 'elder_001';
+        const GIST_ID = 'cf06b6148ec1b8ba7db6cc142c1e96ed';
 
         // 页面加载时读取数据
         window.onload = function() {
@@ -124,10 +123,15 @@
         // 加载数据
         async function loadData() {
             try {
-                // 加随机数防止缓存
-                const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?t=${Date.now()}`);
-                const data = await res.json();
-                const elder = data[ELDER_ID];
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' }
+                });
+                
+                if (!res.ok) throw new Error('获取数据失败');
+                
+                const gist = await res.json();
+                const content = JSON.parse(gist.files['silver-care-data.json'].content);
+                const elder = content.elder_001;
                 
                 if (!elder) {
                     document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 无数据</span>';
@@ -139,7 +143,7 @@
                 
             } catch (err) {
                 console.error('加载失败', err);
-                document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 加载失败</span>';
+                document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 加载失败: ' + err.message + '</span>';
             }
         }
 
@@ -155,7 +159,6 @@
                 const now = new Date();
                 const hoursAgo = Math.floor((now - checkTime) / (1000 * 60 * 60));
                 
-                // 检查是否是今天
                 const isToday = checkTime.toDateString() === now.toDateString();
                 
                 if (isToday) {
@@ -170,9 +173,8 @@
                     showAlert('爸爸已' + hoursAgo + '小时未打卡，请关注！');
                 }
 
-                // 更新统计数据
-                document.getElementById('consecutiveDays').innerText = '7'; // 模拟数据
-                document.getElementById('checkRate').innerText = '95%'; // 模拟数据
+                document.getElementById('consecutiveDays').innerText = '7';
+                document.getElementById('checkRate').innerText = '95%';
                 document.getElementById('lastCheck').innerText = hoursAgo;
                 
             } else {
