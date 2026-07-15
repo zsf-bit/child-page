@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>银发守护 - 子女端</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: "微软雅黑", sans-serif;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
             background: #f5f6fa;
             padding: 20px;
             max-width: 600px;
             margin: 0 auto;
         }
-        h1 { color: #333; }
+        h1 { color: #333; margin-bottom: 20px; }
         .card {
             background: white;
             border-radius: 15px;
@@ -22,23 +24,50 @@
         .good { border-left: 5px solid #2ecc71; }
         .bad { border-left: 5px solid #e74c3c; background: #fff5f5; }
         .name { font-size: 22px; font-weight: bold; }
-        .status { color: #666; margin-top: 5px; }
-        .time { color: #999; font-size: 14px; }
-        button {
-            background: #3498db;
-            color: white;
-            border: none;
+        .status { margin-top: 10px; font-size: 18px; }
+        .time { color: #999; font-size: 14px; margin-top: 5px; }
+        .btn {
+            display: inline-block;
             padding: 10px 20px;
             border-radius: 8px;
+            border: none;
+            color: white;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
+            margin-right: 10px;
+            font-size: 16px;
         }
-        .alert {
+        .btn-blue { background: #3498db; }
+        .btn-green { background: #2ecc71; }
+        .btn-red { background: #e74c3c; }
+        .alert-box {
             background: #fff3cd;
             border: 2px solid #ffc107;
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
+            display: none;
+        }
+        .alert-box.show { display: block; }
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-num { font-size: 28px; font-weight: bold; color: #333; }
+        .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+        .refresh-info {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -46,78 +75,129 @@
 
     <h1>👨‍👩‍👧 银发守护 - 子女端</h1>
 
-    <!-- 预警通知 -->
-    <div class="alert" id="alertBox" style="display:none;">
+    <div class="alert-box" id="alertBox">
         <strong>⚠️ 预警！</strong>
         <p id="alertText"></p>
     </div>
 
-    <!-- 老人状态卡片 1 -->
-    <div class="card good">
+    <div class="card good" id="dadCard">
         <div class="name">👴 张建国 <span style="font-size:14px;color:#999;">爸爸 · 78岁</span></div>
-        <div class="status" style="color:green;">
-            ● 今日已打卡
+        <div class="status" id="dadStatus">
+            <span style="color:#e74c3c;">● 加载中...</span>
         </div>
-        <div class="time">2小时前 · 心情：开心</div>
-        <div style="margin-top:10px;">
-            <span style="background:#e8f5e9;padding:5px 10px;border-radius:5px;">连续7天打卡</span>
-            <span style="background:#e3f2fd;padding:5px 10px;border-radius:5px;">用药完成</span>
+        <div class="time" id="dadTime">--</div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-num" id="consecutiveDays">--</div>
+                <div class="stat-label">连续打卡</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" id="checkRate">--</div>
+                <div class="stat-label">本月打卡率</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" id="lastCheck">--</div>
+                <div class="stat-label">小时前</div>
+            </div>
         </div>
-        <button onclick="callDad()">📞 视频通话</button>
+
+        <button class="btn btn-blue" onclick="refreshData()">🔄 刷新状态</button>
+        <button class="btn btn-green" onclick="callDad()">📞 视频通话</button>
     </div>
 
-    <!-- 老人状态卡片 2 -->
-    <div class="card bad" id="momCard">
-        <div class="name">👵 李秀英 <span style="font-size:14px;color:#999;">妈妈 · 75岁</span></div>
-        <div class="status" style="color:red;">
-            ● 26小时未打卡！
-        </div>
-        <div class="time">上次打卡：昨天 08:30</div>
-        <button onclick="callMom()" style="background:#e74c3c;">📞 立即联系</button>
-        <button onclick="safeNow()" style="background:#2ecc71;margin-left:10px;">✓ 确认安全</button>
-    </div>
-
-    <!-- 通知列表 -->
-    <div class="card">
-        <h3>🔔 最近通知</h3>
-        <div style="border-bottom:1px solid #eee;padding:10px 0;">
-            <span style="color:orange;">⚠️</span> 李秀英 26小时未打卡 <span class="time">10分钟前</span>
-        </div>
-        <div style="border-bottom:1px solid #eee;padding:10px 0;">
-            <span style="color:green;">✓</span> 张建国 已平安打卡 <span class="time">2小时前</span>
-        </div>
-        <div style="padding:10px 0;">
-            <span style="color:blue;">💊</span> 李秀英 确认服用降压药 <span class="time">今天 08:00</span>
-        </div>
+    <div class="refresh-info">
+        自动刷新中... 上次更新：<span id="lastUpdate">--</span>
     </div>
 
     <script>
+        const REPO = 'zsf-bit/silver-care-data';
+        const ELDER_ID = 'elder_001';
+
+        // 页面加载时读取数据
+        window.onload = function() {
+            loadData();
+            // 每30秒自动刷新
+            setInterval(loadData, 30000);
+        };
+
+        // 加载数据
+        async function loadData() {
+            try {
+                // 加随机数防止缓存
+                const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/data.json?t=${Date.now()}`);
+                const data = await res.json();
+                const elder = data[ELDER_ID];
+                
+                if (!elder) {
+                    document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 无数据</span>';
+                    return;
+                }
+
+                updateUI(elder);
+                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString('zh-CN');
+                
+            } catch (err) {
+                console.error('加载失败', err);
+                document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 加载失败</span>';
+            }
+        }
+
+        // 更新界面
+        function updateUI(elder) {
+            const statusEl = document.getElementById('dadStatus');
+            const timeEl = document.getElementById('dadTime');
+            const card = document.getElementById('dadCard');
+            const alertBox = document.getElementById('alertBox');
+
+            if (elder.status === 'checked_in' && elder.lastCheckIn) {
+                const checkTime = new Date(elder.lastCheckIn);
+                const now = new Date();
+                const hoursAgo = Math.floor((now - checkTime) / (1000 * 60 * 60));
+                
+                // 检查是否是今天
+                const isToday = checkTime.toDateString() === now.toDateString();
+                
+                if (isToday) {
+                    statusEl.innerHTML = '<span style="color:#2ecc71;font-weight:bold;">● 今日已打卡</span>';
+                    timeEl.innerText = '打卡时间：' + elder.timeString;
+                    card.className = 'card good';
+                    alertBox.classList.remove('show');
+                } else {
+                    statusEl.innerHTML = '<span style="color:#e74c3c;font-weight:bold;">● 今日未打卡</span>';
+                    timeEl.innerText = '上次打卡：' + elder.timeString;
+                    card.className = 'card bad';
+                    showAlert('爸爸已' + hoursAgo + '小时未打卡，请关注！');
+                }
+
+                // 更新统计数据
+                document.getElementById('consecutiveDays').innerText = '7'; // 模拟数据
+                document.getElementById('checkRate').innerText = '95%'; // 模拟数据
+                document.getElementById('lastCheck').innerText = hoursAgo;
+                
+            } else {
+                statusEl.innerHTML = '<span style="color:#e74c3c;font-weight:bold;">● 未打卡</span>';
+                timeEl.innerText = '暂无打卡记录';
+                card.className = 'card bad';
+                showAlert('爸爸今日未打卡！');
+            }
+        }
+
         // 显示预警
         function showAlert(text) {
-            document.getElementById('alertBox').style.display = 'block';
             document.getElementById('alertText').innerText = text;
+            document.getElementById('alertBox').classList.add('show');
         }
 
-        // 模拟：妈妈没打卡，显示预警
-        setTimeout(function() {
-            showAlert('李秀英已26小时未打卡，建议立即电话联系确认安全！');
-        }, 2000);
+        // 手动刷新
+        function refreshData() {
+            document.getElementById('dadStatus').innerHTML = '<span style="color:#666;">● 刷新中...</span>';
+            loadData();
+        }
 
-        // 打电话
+        // 视频通话
         function callDad() {
-            alert('正在呼叫爸爸...');
-        }
-        function callMom() {
-            alert('正在呼叫妈妈...');
-        }
-
-        // 确认安全
-        function safeNow() {
-            document.getElementById('momCard').className = 'card good';
-            document.getElementById('momCard').querySelector('.status').innerHTML = 
-                '<span style="color:green;">● 已确认安全</span>';
-            document.getElementById('alertBox').style.display = 'none';
-            alert('已标记为安全！');
+            alert('正在呼叫爸爸...\n\n实际应用中会唤起微信视频通话');
         }
     </script>
 
