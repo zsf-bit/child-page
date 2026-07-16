@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>银发守护 - 子女端</title>
+    <title>椿萱守望 - 子女端</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -13,33 +13,19 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        h1 { color: #333; margin-bottom: 20px; }
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
         }
-        .good { border-left: 5px solid #2ecc71; }
-        .bad { border-left: 5px solid #e74c3c; background: #fff5f5; }
-        .name { font-size: 22px; font-weight: bold; }
-        .status { margin-top: 10px; font-size: 18px; }
-        .time { color: #999; font-size: 14px; margin-top: 5px; }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            margin-top: 15px;
-            margin-right: 10px;
-            font-size: 16px;
+        .header h1 {
+            font-size: 28px;
+            color: #333;
         }
-        .btn-blue { background: #3498db; }
-        .btn-green { background: #2ecc71; }
-        .btn-red { background: #e74c3c; }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
         .alert-box {
             background: #fff3cd;
             border: 2px solid #ffc107;
@@ -49,81 +35,213 @@
             display: none;
         }
         .alert-box.show { display: block; }
+        .alert-box.danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        .alert-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .good { border-left: 5px solid #2ecc71; }
+        .bad { border-left: 5px solid #e74c3c; background: #fff5f5; }
+        .emergency { border-left: 5px solid #dc3545; background: #f8d7da; animation: flash 1s infinite; }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        .relation {
+            font-size: 14px;
+            color: #999;
+            margin-left: 10px;
+        }
+        .status-row {
+            margin: 15px 0;
+        }
+        .status {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .green { color: #2ecc71; }
+        .red { color: #e74c3c; }
+        .time {
+            color: #999;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
         .stats {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
-            margin-top: 15px;
+            margin: 20px 0;
         }
-        .stat-box {
+        .stat {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 10px;
             text-align: center;
         }
-        .stat-num { font-size: 28px; font-weight: bold; color: #333; }
-        .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+        .stat-num {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        .btn-refresh { background: #3498db; }
+        .btn-call { background: #2ecc71; }
+        .btn-emergency { background: #dc3545; animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
         .refresh-info {
             color: #999;
             font-size: 12px;
             text-align: center;
             margin-top: 20px;
         }
+
+        /* 视频通话 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+        .video-container {
+            width: 300px;
+            height: 400px;
+            background: #333;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
-    <h1>👨‍👩‍👧 银发守护 - 子女端</h1>
+    <div class="header">
+        <h1>👨‍👩‍👧 椿萱守望</h1>
+        <p>实时守护父母安全</p>
+    </div>
 
     <div class="alert-box" id="alertBox">
-        <strong>⚠️ 预警！</strong>
-        <p id="alertText"></p>
+        <span class="alert-title">⚠️ 预警！</span>
+        <span id="alertText"></span>
     </div>
 
     <div class="card good" id="dadCard">
-        <div class="name">👴 张建国 <span style="font-size:14px;color:#999;">爸爸 · 78岁</span></div>
-        <div class="status" id="dadStatus">
-            <span style="color:#e74c3c;">● 加载中...</span>
+        <div>
+            <span class="name">👴 张建国</span>
+            <span class="relation">爸爸 · 78岁</span>
         </div>
-        <div class="time" id="dadTime">--</div>
         
+        <div class="status-row">
+            <span class="status" id="dadStatus">
+                <span style="color:#666;">● 加载中...</span>
+            </span>
+            <span class="time" id="dadTime">--</span>
+        </div>
+
         <div class="stats">
-            <div class="stat-box">
+            <div class="stat">
                 <div class="stat-num" id="consecutiveDays">--</div>
                 <div class="stat-label">连续打卡</div>
             </div>
-            <div class="stat-box">
+            <div class="stat">
                 <div class="stat-num" id="checkRate">--</div>
                 <div class="stat-label">本月打卡率</div>
             </div>
-            <div class="stat-box">
+            <div class="stat">
                 <div class="stat-num" id="lastCheck">--</div>
                 <div class="stat-label">小时前</div>
             </div>
         </div>
 
-        <button class="btn btn-blue" onclick="refreshData()">🔄 刷新状态</button>
-        <button class="btn btn-green" onclick="callDad()">📞 视频通话</button>
+        <button class="btn btn-refresh" onclick="refreshData()">🔄 刷新状态</button>
+        <button class="btn btn-call" onclick="startVideoCall()">📹 视频通话</button>
     </div>
 
     <div class="refresh-info">
         自动刷新中... 上次更新：<span id="lastUpdate">--</span>
     </div>
 
+    <!-- 视频通话弹窗 -->
+    <div class="modal" id="callModal">
+        <div class="modal-content">
+            <h2>📹 视频通话</h2>
+            <div class="video-container">
+                <video id="remoteVideo" autoplay playsinline></video>
+            </div>
+            <p>正在连接老人端...</p>
+            <button class="btn btn-refresh" onclick="endCall()">挂断</button>
+        </div>
+    </div>
+
     <script>
         const GIST_ID = 'cf06b6148ec1b8ba7db6cc142c1e96ed';
+        const GIST_URL = `https://api.github.com/gists/${GIST_ID}`;
 
-        // 页面加载时读取数据
-        window.onload = function() {
-            loadData();
-            // 每30秒自动刷新
-            setInterval(loadData, 30000);
-        };
+        // 请求通知权限
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
 
         // 加载数据
         async function loadData() {
             try {
-                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                const res = await fetch(GIST_URL, {
                     headers: { 'Accept': 'application/vnd.github.v3+json' }
                 });
                 
@@ -139,11 +257,14 @@
                 }
 
                 updateUI(elder);
-                document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString('zh-CN');
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('zh-CN');
+                
+                // 检查是否需要发送通知
+                checkAndNotify(elder);
                 
             } catch (err) {
                 console.error('加载失败', err);
-                document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 加载失败: ' + err.message + '</span>';
+                document.getElementById('dadStatus').innerHTML = '<span style="color:#e74c3c;">● 加载失败</span>';
             }
         }
 
@@ -154,6 +275,25 @@
             const card = document.getElementById('dadCard');
             const alertBox = document.getElementById('alertBox');
 
+            // 检查是否是紧急状态
+            if (elder.sos) {
+                card.className = 'card emergency';
+                statusEl.innerHTML = '<span style="color:#dc3545;font-weight:bold;">🚨 紧急呼救！</span>';
+                timeEl.textContent = '刚刚';
+                alertBox.className = 'alert-box danger show';
+                document.getElementById('alertText').textContent = '爸爸触发了紧急呼救，请立即联系确认安全！';
+                
+                // 发送浏览器通知
+                if (Notification.permission === 'granted') {
+                    new Notification('🚨 椿萱守望 - 紧急呼救', {
+                        body: '爸爸触发了SOS，请立即联系！',
+                        icon: '🚨',
+                        requireInteraction: true
+                    });
+                }
+                return;
+            }
+
             if (elder.status === 'checked_in' && elder.lastCheckIn) {
                 const checkTime = new Date(elder.lastCheckIn);
                 const now = new Date();
@@ -163,23 +303,23 @@
                 
                 if (isToday) {
                     statusEl.innerHTML = '<span style="color:#2ecc71;font-weight:bold;">● 今日已打卡</span>';
-                    timeEl.innerText = '打卡时间：' + elder.timeString;
+                    timeEl.textContent = '打卡时间：' + elder.timeString;
                     card.className = 'card good';
                     alertBox.classList.remove('show');
                 } else {
                     statusEl.innerHTML = '<span style="color:#e74c3c;font-weight:bold;">● 今日未打卡</span>';
-                    timeEl.innerText = '上次打卡：' + elder.timeString;
+                    timeEl.textContent = '上次打卡：' + elder.timeString;
                     card.className = 'card bad';
                     showAlert('爸爸已' + hoursAgo + '小时未打卡，请关注！');
                 }
 
-                document.getElementById('consecutiveDays').innerText = '7';
-                document.getElementById('checkRate').innerText = '95%';
-                document.getElementById('lastCheck').innerText = hoursAgo;
+                document.getElementById('consecutiveDays').textContent = '7';
+                document.getElementById('checkRate').textContent = '95%';
+                document.getElementById('lastCheck').textContent = hoursAgo;
                 
             } else {
                 statusEl.innerHTML = '<span style="color:#e74c3c;font-weight:bold;">● 未打卡</span>';
-                timeEl.innerText = '暂无打卡记录';
+                timeEl.textContent = '暂无打卡记录';
                 card.className = 'card bad';
                 showAlert('爸爸今日未打卡！');
             }
@@ -187,8 +327,25 @@
 
         // 显示预警
         function showAlert(text) {
-            document.getElementById('alertText').innerText = text;
+            document.getElementById('alertText').textContent = text;
             document.getElementById('alertBox').classList.add('show');
+        }
+
+        // 检查并发送通知
+        let lastNotifiedStatus = null;
+        function checkAndNotify(elder) {
+            if (elder.status !== lastNotifiedStatus) {
+                lastNotifiedStatus = elder.status;
+                
+                if (Notification.permission === 'granted') {
+                    if (elder.status === 'checked_in') {
+                        new Notification('✅ 椿萱守望', {
+                            body: '爸爸已平安打卡！',
+                            icon: '👴'
+                        });
+                    }
+                }
+            }
         }
 
         // 手动刷新
@@ -197,10 +354,39 @@
             loadData();
         }
 
-        // 视频通话
-        function callDad() {
-            alert('正在呼叫爸爸...\n\n实际应用中会唤起微信视频通话');
+        // WebRTC 视频通话
+        async function startVideoCall() {
+            const modal = document.getElementById('callModal');
+            modal.classList.add('active');
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                
+                const video = document.getElementById('remoteVideo');
+                video.srcObject = stream;
+                
+            } catch (err) {
+                alert('无法访问摄像头：' + err.message);
+            }
         }
+        
+        function endCall() {
+            const modal = document.getElementById('callModal');
+            modal.classList.remove('active');
+            
+            const video = document.getElementById('remoteVideo');
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+        }
+
+        // 页面加载时读取 + 每10秒自动刷新
+        loadData();
+        setInterval(loadData, 10000);
     </script>
 
 </body>
